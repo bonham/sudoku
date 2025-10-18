@@ -1,4 +1,5 @@
 from random import randint
+import numpy as np
 # main
 
 from Grid import Grid
@@ -12,7 +13,7 @@ for bn in range(9):
     i = randint(0, 8)
     v = randint(0, 8)
 
-    b = g.getElementsInBlock(bn)
-    b[i] = v
+    b = g.getBlockXY(0, 0)
 
-print(g.str())
+
+g.str()

@@ -36,12 +36,13 @@ def test_getElementsInBlock():
     g.setLinear(11, 110)
     g.setLinear(17, 170)
 
-    block2 = g.getElementsInBlock(0)
+    block0 = g.getBlockXY(0)
 
-    assert block2[0:3].tolist() == [0] * 3
-    assert block2[4].tolist() == 100
-    assert block2[5].tolist() == 110
-    assert block2[6:8].tolist() == [0] * 2
+    assert block0[0, :].tolist() == [0] * 3
+    assert block0[1, 0] == 0
+    assert block0[1, 1] == 100
+    assert block0[1, 2] == 110
+    assert block0[2, :].tolist() == [0] * 3
 
 
 def test_getElementsInCol():

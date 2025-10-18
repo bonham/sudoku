@@ -8,15 +8,11 @@ class Grid:
         self.grid = np.zeros((9, 9), dtype='i')
         self.flat = self.grid.reshape(81)
 
-        self.blocks = []
-        for blockNumber in range(9):
-
-            blockRowIdx = blockNumber // 3
-            blockColIdx = blockNumber % 3
-
-            block = self.grid[blockRowIdx:blockRowIdx +
-                              3, blockColIdx:blockColIdx+3]
-            self.blocks.append(block)
+        self.blocks = [
+            self.grid[i:i+3, j:j+3]
+            for j in range(0, 9, 3)
+            for i in range(0, 9, 3)
+        ]
 
     # Index from 0 to 80
 
@@ -32,9 +28,8 @@ class Grid:
     def getFlatList(self):
         return self.flat
 
-    # bNum = 0..8
-    def getElementsInBlock(self, bNum):
-        return self.blocks[bNum].reshape(9)
+    def getBlockXY(self, bNum):
+        return self.blocks[bNum]
 
     # Row is all elements with fixed y
     def getRow(self, rowIndex):
