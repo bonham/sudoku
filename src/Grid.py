@@ -28,7 +28,7 @@ class Grid:
     def getFlatList(self):
         return self.flat
 
-    def getBlockXY(self, bNum):
+    def getBlock(self, bNum):
         return self.blocks[bNum]
 
     # Row is all elements with fixed y

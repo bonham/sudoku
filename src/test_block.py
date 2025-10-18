@@ -36,7 +36,7 @@ def test_getElementsInBlock():
     g.setLinear(11, 110)
     g.setLinear(17, 170)
 
-    block0 = g.getBlockXY(0)
+    block0 = g.getBlock(0)
 
     assert block0[0, :].tolist() == [0] * 3
     assert block0[1, 0] == 0

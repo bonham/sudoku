@@ -13,7 +13,8 @@ for bn in range(9):
     i = randint(0, 8)
     v = randint(0, 8)
 
-    b = g.getBlockXY(0, 0)
+    b = g.getBlock(bn)
+    b[i//3, i % 3] = v
 
 
-g.str()
+print(g.str())
