@@ -14,41 +14,40 @@ class Grid:
             for j in range(0, 9, 3)
         ]
 
-    # Index from 0 to 80
+    def getLinear(self, i):
+        return self.flat[i]
 
     def setLinear(self, i, v):
-        self.flat[i] = v
+
+        # prevent setting a value if it is not zero
+        if self.getLinear(i) != 0:
+            raise SudokuExistsError
+
+        allowed = self.allowedValuesLinear(i)
+
+        if v in allowed:
+            self.flat[i] = v
+        else:
+            raise SudokuValueError
 
     def getXY(self, x, y):
         return self.grid[y, x]
 
     def setXY(self, x, y, v):
-        allowed = self.allowedValuesXY(x, y)
 
+        # prevent setting a value if it is not zero
         if self.getXY(x, y) != 0:
             raise SudokuExistsError
+
+        allowed = self.allowedValuesXY(x, y)
 
         if v in allowed:
             self.grid[y, x] = v
         else:
             raise SudokuValueError
 
-    def getLinear(self, i):
-        return self.flat[i]
-
-    def getFlatList(self):
-        return self.flat
-
     def getBlock(self, bNum):
         return self.blocks[bNum]
-
-    def getElementInBlockLinear(self, bNum, elementNum):
-
-        return self.getBlock(bNum)[elementNum//3, elementNum % 3]
-
-    def setElementInBlockLinear(self, bNum, elementNum, value):
-
-        self.getBlock(bNum)[elementNum//3, elementNum % 3] = value
 
     def allowedValuesXY(self, ix, iy):
 
@@ -69,20 +68,32 @@ class Grid:
         return self.allowedValuesXY(x, y)
 
     def getRow(self, rowIndex):
-
         return self.grid[rowIndex, :]
 
     # Col is all elements with fixed x
     def getCol(self, colIndex):
-
         return self.grid[:, colIndex]
 
+    # return string representation for printing
     def str(self):
-
         return np.array2string(self.grid)
 
     def clearLinear(self, i):
         self.flat[i] = 0
+
+    # - - - - - - - - -                                - -
+    # Below methods are not needed for simple sudoku solver
+
+    def getFlatList(self):
+        return self.flat
+
+    def getElementInBlockLinear(self, bNum, elementNum):
+
+        return self.getBlock(bNum)[elementNum//3, elementNum % 3]
+
+    def setElementInBlockLinear(self, bNum, elementNum, value):
+
+        self.getBlock(bNum)[elementNum//3, elementNum % 3] = value
 
 
 def linear2xy(l):
