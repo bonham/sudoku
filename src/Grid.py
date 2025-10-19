@@ -42,11 +42,16 @@ class Grid:
     def allowedValuesXY(self, ix, iy):
 
         blockNum = blockNumByXY(ix, iy)
-        block = self.getBlock(blockNum)
+        block = set(self.getBlock(blockNum).flatten().tolist())
 
-        row = self.getRow(iy)
-        col = self.getCol(ix)
-        pass
+        row = set(self.getRow(iy).tolist())
+        col = set(self.getCol(ix).tolist())
+
+        numbersInGrid = block.union(row, col)
+
+        onetonine = set(range(1, 10))
+
+        return onetonine.difference(numbersInGrid)
 
     def getRow(self, rowIndex):
 

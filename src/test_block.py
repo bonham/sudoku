@@ -173,10 +173,17 @@ def test_allowedValuesxy():
 
     g = Grid()
 
-    g.setYX(1, 0, 2)
-    g.setYX(3, 0, 5)
-    g.setYX(0, 1, 1)
-    g.setYX(1, 0, 2)
-    g.setYX(1, 0, 2)
-    g.setYX(1, 0, 2)
-    g.setYX(1, 0, 2)
+    g.setXY(1, 0, 1)
+    g.setXY(3, 0, 7)
+
+    g.setXY(0, 1, 2)
+    g.setXY(4, 1, 4)
+
+    g.setXY(3, 2, 9)
+    g.setXY(0, 3, 5)
+    g.setXY(1, 3, 3)
+    g.setXY(2, 3, 6)
+
+    av = g.allowedValuesXY(1, 1)
+    diff = av.symmetric_difference(set([5, 6, 7, 8, 9]))
+    assert len(diff) == 0
