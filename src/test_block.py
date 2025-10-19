@@ -44,6 +44,9 @@ def test_getElementsInBlock():
     assert block0[1, 2] == 110
     assert block0[2, :].tolist() == [0] * 3
 
+    block2 = g.getBlock(2)
+    assert block2[1, 2] == 170
+
 
 def test_getElementsInCol():
 
@@ -87,3 +90,13 @@ def test_blockCoordsByBlockIndex():
         0, 1) == [27, 28, 29, 36, 37, 38, 45, 46, 47]
     assert blockCoordsByBlockIndex(
         1, 1) == [30, 31, 32, 39, 40, 41, 48, 49, 50]
+
+
+def test_getelementsinblocklinear():
+    g = Grid()
+    g.setLinear(10, 100)
+    g.setLinear(11, 110)
+    g.setLinear(17, 170)
+
+    assert g.getElementInBlockLinear(0, 4) == 100
+    assert g.getElementInBlockLinear(2, 5) == 170

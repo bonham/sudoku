@@ -13,8 +13,6 @@ for bn in range(9):
     i = randint(0, 8)
     v = randint(0, 8)
 
-    b = g.getBlock(bn)
-    b[i//3, i % 3] = v
-
+    g.setElementInBlockLinear(bn, i, v)
 
 print(g.str())

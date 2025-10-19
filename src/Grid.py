@@ -10,8 +10,8 @@ class Grid:
 
         self.blocks = [
             self.grid[i:i+3, j:j+3]
-            for j in range(0, 9, 3)
             for i in range(0, 9, 3)
+            for j in range(0, 9, 3)
         ]
 
     # Index from 0 to 80
@@ -31,7 +31,16 @@ class Grid:
     def getBlock(self, bNum):
         return self.blocks[bNum]
 
+    def getElementInBlockLinear(self, bNum, elementNum):
+
+        return self.getBlock(bNum)[elementNum//3, elementNum % 3]
+
+    def setElementInBlockLinear(self, bNum, elementNum, value):
+
+        self.getBlock(bNum)[elementNum//3, elementNum % 3] = value
+
     # Row is all elements with fixed y
+
     def getRow(self, rowIndex):
 
         return self.grid[rowIndex, :]
