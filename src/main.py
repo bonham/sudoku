@@ -1,15 +1,62 @@
 from SudokuGrid import SudokuGrid
 import random
+import numpy as np
+from datetime import datetime
+import sys
 
-grid = SudokuGrid()
+
+def emptyString2Zero(input):
+    if input == "":
+        return 0
+    else:
+        return input
+
+
+# global
+grid = None
+
+if len(sys.argv) == 2:
+
+    try:
+        loadednp = np.loadtxt(
+            sys.argv[1], dtype='i', delimiter=',', converters=emptyString2Zero)
+    except FileNotFoundError as e:
+        print(f"Failed to load '{sys.argv[1]}': {e}")
+        exit(1)
+    else:
+        grid = SudokuGrid(initGrid=loadednp)
+
+elif len(sys.argv) == 1:
+    grid = SudokuGrid()
+    print("\nGenerating full sudoku from scratch")
+else:
+    print("""
+Usage to generate a sudoku:
+          
+    main.py
+          
+Usage to solve partial sudoku
+    
+    main.py Aufgabe.csv
+          
+Note: The undefined cells need to have zero values
+
+""")
+    exit(1)
+
+
+####
+# check which cells are zero
+emptyCellIndexes = np.asarray(grid.flat == 0).nonzero()[0].tolist()
 
 # Prepare dict of emtpy sets to store blacklisted values
-blacklist = {key: set() for key in range(0, 81)}
+blacklist = {emptyCellIndexes[key]: set()
+             for key in range(0, len(emptyCellIndexes))}
 
-# Loop over each element
-idx = 0
-while (idx < 81):
-
+# Loop over indexes of elements with zeroes
+i = 0
+while (i < len(emptyCellIndexes)):
+    idx = emptyCellIndexes[i]
     allowed = grid.allowedValuesLinear(idx).difference(blacklist[idx])
 
     if len(allowed) == 0:
@@ -17,17 +64,21 @@ while (idx < 81):
         # print("Es geht nicht weiter x {} y {}".format(x, y))
 
         # go a step back
-        prevIdx = idx - 1
+        prevIdx = emptyCellIndexes[i - 1]
 
         numberToBeBlackListed = grid.getLinear(prevIdx)
         blacklist[prevIdx].add(numberToBeBlackListed)
         blacklist[idx].clear()  # invalidate current blacklist
         grid.clearLinear(prevIdx)
-        idx = prevIdx
+
+        i = i - 1
 
     else:
         value = random.choice(list(allowed))
         grid.setLinear(idx, value)
-        idx += 1
+        i += 1
 
-print(grid.str())
+print("\n"+grid.str())
+filename = datetime.today().strftime('out/%Y-%m-%d-%Hh%M%S.csv')
+print("\nOutput grid is in file {}\n".format(filename))
+np.savetxt(filename, grid.grid, delimiter=',', fmt='%d')

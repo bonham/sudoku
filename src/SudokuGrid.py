@@ -3,11 +3,19 @@ import numpy as np
 
 class SudokuGrid:
 
-    def __init__(self, disableValueCheck=False):
+    def __init__(self, disableValueCheck=False, initGrid: np.ndarray | None = None):
 
         self.disableValueCheck = disableValueCheck
 
-        self.grid = np.zeros((9, 9), dtype='i')
+        if (type(initGrid) == np.ndarray):
+            if initGrid.shape == (9, 9):
+                self.grid = initGrid
+            else:
+                print("Grid is not in 9x9 format, but {}".format(initGrid.shape()))
+                exit(1)
+        else:
+            self.grid = np.zeros((9, 9), dtype='i')
+
         self.flat = self.grid.reshape(81)
 
         self.blocks = [
