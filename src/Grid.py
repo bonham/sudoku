@@ -19,8 +19,19 @@ class Grid:
     def setLinear(self, i, v):
         self.flat[i] = v
 
+    def getXY(self, x, y):
+        return self.grid[y, x]
+
     def setXY(self, x, y, v):
-        self.grid[y, x] = v
+        allowed = self.allowedValuesXY(x, y)
+
+        if self.getXY(x, y) != 0:
+            raise SudokuExistsError
+
+        if v in allowed:
+            self.grid[y, x] = v
+        else:
+            raise SudokuValueError
 
     def getLinear(self, i):
         return self.flat[i]
@@ -42,14 +53,14 @@ class Grid:
     def allowedValuesXY(self, ix, iy):
 
         blockNum = blockNumByXY(ix, iy)
-        block = set(self.getBlock(blockNum).flatten().tolist())
+        blockSet = set(self.getBlock(blockNum).flatten().tolist())
 
-        row = set(self.getRow(iy).tolist())
-        col = set(self.getCol(ix).tolist())
+        rowSet = set(self.getRow(iy).tolist())
+        colSet = set(self.getCol(ix).tolist())
 
-        numbersInGrid = block.union(row, col)
+        numbersInGrid = blockSet.union(rowSet, colSet)
 
-        onetonine = set(range(1, 10))
+        onetonine = set(range(1, 10))  # 1..9
 
         return onetonine.difference(numbersInGrid)
 
@@ -65,6 +76,9 @@ class Grid:
     def str(self):
 
         return np.array2string(self.grid)
+
+    def clearLinear(self, i):
+        self.flat[i] = 0
 
 
 def linear2xy(l):
@@ -112,13 +126,5 @@ class SudokuValueError(ValueError):
     pass
 
 
-class SudokuBlockError(SudokuValueError):
-    pass
-
-
-class SudokuRowError(SudokuValueError):
-    pass
-
-
-class SudokuColError(SudokuValueError):
+class SudokuExistsError(SudokuValueError):
     pass

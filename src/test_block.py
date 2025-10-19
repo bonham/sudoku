@@ -1,4 +1,4 @@
-from Grid import Grid, linear2xy, xy2linear, blockCoordsByBlockIndex, blockNumByXY
+from Grid import Grid, linear2xy, xy2linear, blockCoordsByBlockIndex, blockNumByXY, SudokuValueError, SudokuExistsError
 import pytest
 
 
@@ -184,6 +184,17 @@ def test_allowedValuesxy():
     g.setXY(1, 3, 3)
     g.setXY(2, 3, 6)
 
-    av = g.allowedValuesXY(1, 1)
-    diff = av.symmetric_difference(set([5, 6, 7, 8, 9]))
-    assert len(diff) == 0
+    assert g.allowedValuesXY(1, 1) == {5, 6, 7, 8, 9}
+    assert g.allowedValuesXY(0, 4) == {1, 4, 7, 8, 9}
+
+    with pytest.raises(SudokuValueError):
+        g.setXY(0, 0, 7)
+
+    with pytest.raises(SudokuValueError):
+        g.setXY(0, 0, 2)
+
+    with pytest.raises(SudokuValueError):
+        g.setXY(0, 4, 6)
+
+    with pytest.raises(SudokuExistsError):
+        g.setXY(0, 3, 6)
