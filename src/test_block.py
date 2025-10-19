@@ -1,4 +1,4 @@
-from Grid import Grid, linear2xy, xy2linear, blockCoordsByBlockIndex
+from Grid import Grid, linear2xy, xy2linear, blockCoordsByBlockIndex, blockNumByXY
 import pytest
 
 
@@ -56,7 +56,20 @@ def test_getElementsInCol():
     g.setLinear(11, 110)
     g.setLinear(17, 170)
 
-    rowElements = g.getCol(0)
+    assert g.getCol(0).tolist() == [0] * 9
+    assert g.getCol(1)[0:3].tolist() == [0, 100, 0]
+
+
+def test_getElementsInRow():
+
+    g = Grid()
+
+    g.setLinear(10, 100)
+    g.setLinear(11, 110)
+    g.setLinear(17, 170)
+
+    assert g.getRow(2).tolist() == [0] * 9
+    assert g.getRow(1).tolist() == [0, 100, 110, 0, 0, 0, 0, 0, 170]
 
 
 def test_linear2xy():
@@ -100,3 +113,70 @@ def test_getelementsinblocklinear():
 
     assert g.getElementInBlockLinear(0, 4) == 100
     assert g.getElementInBlockLinear(2, 5) == 170
+
+
+def test_blockNumByXY():
+
+    assert blockNumByXY(0, 0) == 0
+    assert blockNumByXY(1, 0) == 0
+    assert blockNumByXY(2, 0) == 0
+    assert blockNumByXY(3, 0) == 1
+    assert blockNumByXY(5, 0) == 1
+    assert blockNumByXY(6, 0) == 2
+
+    assert blockNumByXY(0, 1) == 0
+    assert blockNumByXY(1, 1) == 0
+    assert blockNumByXY(2, 1) == 0
+    assert blockNumByXY(3, 1) == 1
+    assert blockNumByXY(5, 1) == 1
+    assert blockNumByXY(6, 1) == 2
+    assert blockNumByXY(0, 2) == 0
+
+    assert blockNumByXY(1, 2) == 0
+    assert blockNumByXY(2, 2) == 0
+    assert blockNumByXY(3, 2) == 1
+    assert blockNumByXY(5, 2) == 1
+    assert blockNumByXY(6, 2) == 2
+
+    assert blockNumByXY(0, 3) == 3
+    assert blockNumByXY(1, 3) == 3
+    assert blockNumByXY(2, 3) == 3
+    assert blockNumByXY(3, 3) == 4
+    assert blockNumByXY(5, 3) == 4
+    assert blockNumByXY(6, 3) == 5
+
+
+def test_setxy():
+
+    g = Grid()
+
+    g.setXY(0, 0, 10)
+    g.setXY(3, 0, 20)
+    g.setXY(8, 0, 30)
+    g.setXY(1, 1, 40)
+
+    flat = g.getFlatList()[0:12]
+    assert g.getFlatList()[0:11].tolist() == [
+        10, 0, 0, 20, 0, 0, 0, 0, 30,
+        0, 40
+    ]
+
+
+def test_allowedValuesxy():
+
+    # 0 1 0 7
+    # 2 ? 0 0 4
+    # 0 0 0 9
+    # 5 3 6
+
+    # allowed for 1,1: 5,6,7,8,9
+
+    g = Grid()
+
+    g.setYX(1, 0, 2)
+    g.setYX(3, 0, 5)
+    g.setYX(0, 1, 1)
+    g.setYX(1, 0, 2)
+    g.setYX(1, 0, 2)
+    g.setYX(1, 0, 2)
+    g.setYX(1, 0, 2)

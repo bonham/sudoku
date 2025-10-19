@@ -19,7 +19,7 @@ class Grid:
     def setLinear(self, i, v):
         self.flat[i] = v
 
-    def setYX(self, y, x, v):
+    def setXY(self, x, y, v):
         self.grid[y, x] = v
 
     def getLinear(self, i):
@@ -39,7 +39,14 @@ class Grid:
 
         self.getBlock(bNum)[elementNum//3, elementNum % 3] = value
 
-    # Row is all elements with fixed y
+    def allowedValuesXY(self, ix, iy):
+
+        blockNum = blockNumByXY(ix, iy)
+        block = self.getBlock(blockNum)
+
+        row = self.getRow(iy)
+        col = self.getCol(ix)
+        pass
 
     def getRow(self, rowIndex):
 
@@ -86,3 +93,27 @@ def blockCoordsByBlockIndex(bx, by):
             r.append(n)
 
     return r
+
+
+def blockNumByXY(x, y):
+    # Note: args are xy - grid index is yx
+    bx = x // 3
+    by = y // 3
+    r = by * 3 + bx
+    return r
+
+
+class SudokuValueError(ValueError):
+    pass
+
+
+class SudokuBlockError(SudokuValueError):
+    pass
+
+
+class SudokuRowError(SudokuValueError):
+    pass
+
+
+class SudokuColError(SudokuValueError):
+    pass
