@@ -64,6 +64,10 @@ class Grid:
 
         return onetonine.difference(numbersInGrid)
 
+    def allowedValuesLinear(self, i):
+        (x, y) = linear2xy(i)
+        return self.allowedValuesXY(x, y)
+
     def getRow(self, rowIndex):
 
         return self.grid[rowIndex, :]
