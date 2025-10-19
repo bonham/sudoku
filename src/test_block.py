@@ -1,9 +1,9 @@
-from Grid import Grid, linear2xy, xy2linear, blockCoordsByBlockIndex, blockNumByXY, SudokuValueError, SudokuExistsError
+from SudokuGrid import SudokuGrid, linear2xy, xy2linear, blockCoordsByBlockIndex, blockNumByXY, SudokuValueError, SudokuExistsError
 import pytest
 
 
 def test_setget():
-    g = Grid()
+    g = SudokuGrid(disableValueCheck=True)
 
     g.setLinear(1, 99)
     g.setLinear(10, 77)
@@ -15,7 +15,7 @@ def test_setget():
 
 def test_setLinear_getFlat():
 
-    g = Grid()
+    g = SudokuGrid(disableValueCheck=True)
 
     g.setLinear(10, 100)
     g.setLinear(11, 110)
@@ -31,7 +31,7 @@ def test_setLinear_getFlat():
 
 def test_getElementsInBlock():
 
-    g = Grid()
+    g = SudokuGrid(disableValueCheck=True)
     g.setLinear(10, 100)
     g.setLinear(11, 110)
     g.setLinear(17, 170)
@@ -50,7 +50,7 @@ def test_getElementsInBlock():
 
 def test_getElementsInCol():
 
-    g = Grid()
+    g = SudokuGrid(disableValueCheck=True)
 
     g.setLinear(10, 100)
     g.setLinear(11, 110)
@@ -62,7 +62,7 @@ def test_getElementsInCol():
 
 def test_getElementsInRow():
 
-    g = Grid()
+    g = SudokuGrid(disableValueCheck=True)
 
     g.setLinear(10, 100)
     g.setLinear(11, 110)
@@ -106,13 +106,13 @@ def test_blockCoordsByBlockIndex():
 
 
 def test_getelementsinblocklinear():
-    g = Grid()
-    g.setLinear(10, 100)
-    g.setLinear(11, 110)
-    g.setLinear(17, 170)
+    g = SudokuGrid()
+    g.setLinear(10, 1)
+    g.setLinear(11, 2)
+    g.setLinear(17, 7)
 
-    assert g.getElementInBlockLinear(0, 4) == 100
-    assert g.getElementInBlockLinear(2, 5) == 170
+    assert g.getElementInBlockLinear(0, 4) == 1
+    assert g.getElementInBlockLinear(2, 5) == 7
 
 
 def test_blockNumByXY():
@@ -148,17 +148,17 @@ def test_blockNumByXY():
 
 def test_setxy():
 
-    g = Grid()
+    g = SudokuGrid()
 
-    g.setXY(0, 0, 10)
-    g.setXY(3, 0, 20)
-    g.setXY(8, 0, 30)
-    g.setXY(1, 1, 40)
+    g.setXY(0, 0, 1)
+    g.setXY(3, 0, 2)
+    g.setXY(8, 0, 3)
+    g.setXY(1, 1, 4)
 
     flat = g.getFlatList()[0:12]
     assert g.getFlatList()[0:11].tolist() == [
-        10, 0, 0, 20, 0, 0, 0, 0, 30,
-        0, 40
+        1, 0, 0, 2, 0, 0, 0, 0, 3,
+        0, 4
     ]
 
 
@@ -171,7 +171,7 @@ def test_allowedValuesxy():
 
     # allowed for 1,1: 5,6,7,8,9
 
-    g = Grid()
+    g = SudokuGrid()
 
     g.setXY(1, 0, 1)
     g.setXY(3, 0, 7)

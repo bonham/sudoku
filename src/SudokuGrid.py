@@ -1,9 +1,11 @@
 import numpy as np
 
 
-class Grid:
+class SudokuGrid:
 
-    def __init__(self):
+    def __init__(self, disableValueCheck=False):
+
+        self.disableValueCheck = disableValueCheck
 
         self.grid = np.zeros((9, 9), dtype='i')
         self.flat = self.grid.reshape(81)
@@ -25,7 +27,7 @@ class Grid:
 
         allowed = self.allowedValuesLinear(i)
 
-        if v in allowed:
+        if (v in allowed) or self.disableValueCheck:
             self.flat[i] = v
         else:
             raise SudokuValueError
@@ -41,7 +43,7 @@ class Grid:
 
         allowed = self.allowedValuesXY(x, y)
 
-        if v in allowed:
+        if (v in allowed) or self.disableValueCheck:
             self.grid[y, x] = v
         else:
             raise SudokuValueError

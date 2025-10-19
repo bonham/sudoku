@@ -1,7 +1,7 @@
-from Grid import Grid, linear2xy
+from SudokuGrid import SudokuGrid
 import random
 
-g = Grid()
+g = SudokuGrid()
 
 # Create dict with keys=1..81 and empty set as value.
 blacklist = {key: set() for key in range(0, 81)}
