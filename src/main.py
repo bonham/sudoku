@@ -1,16 +1,16 @@
 from SudokuGrid import SudokuGrid
 import random
 
-g = SudokuGrid()
+grid = SudokuGrid()
 
-# Create dict with keys=1..81 and empty set as value.
+# Prepare dict of emtpy sets to store blacklisted values
 blacklist = {key: set() for key in range(0, 81)}
 
+# Loop over each element
 idx = 0
-
 while (idx < 81):
 
-    allowed = g.allowedValuesLinear(idx).difference(blacklist[idx])
+    allowed = grid.allowedValuesLinear(idx).difference(blacklist[idx])
 
     if len(allowed) == 0:
 
@@ -18,15 +18,16 @@ while (idx < 81):
 
         # go a step back
         prevIdx = idx - 1
-        numberToBlackList = g.getLinear(prevIdx)
-        blacklist[prevIdx].add(numberToBlackList)
+
+        numberToBeBlackListed = grid.getLinear(prevIdx)
+        blacklist[prevIdx].add(numberToBeBlackListed)
         blacklist[idx].clear()  # invalidate current blacklist
-        g.clearLinear(prevIdx)
+        grid.clearLinear(prevIdx)
         idx = prevIdx
 
     else:
         value = random.choice(list(allowed))
-        g.setLinear(idx, value)
+        grid.setLinear(idx, value)
         idx += 1
 
-print(g.str())
+print(grid.str())

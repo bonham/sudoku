@@ -1,6 +1,9 @@
 from SudokuGrid import SudokuGrid, linear2xy, xy2linear, blockCoordsByBlockIndex, blockNumByXY, SudokuValueError, SudokuExistsError
 import pytest
 
+# Install with 'pip install pytest'
+# Then run this file with 'pytest'
+
 
 def test_setget():
     g = SudokuGrid(disableValueCheck=True)
