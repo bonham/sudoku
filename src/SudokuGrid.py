@@ -116,7 +116,7 @@ class SudokuGrid:
         self.getBlock(bNum)[elementNum//3, elementNum % 3] = value
 
 
-def linear2xy(linearIndex):
+def linear2xy(linearIndex) -> list[int]:
 
     if (linearIndex >= 81 or linearIndex < 0):
         raise ValueError

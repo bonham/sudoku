@@ -3,13 +3,14 @@ import random
 import numpy as np
 from datetime import datetime
 import sys
+from typing import Any, Dict
 
 
-def emptyString2Zero(input):
+def emptyString2Zero(input: Any) -> int:
     if input == "":
         return 0
     else:
-        return input
+        return int(input)
 
 
 # global
@@ -50,8 +51,8 @@ Note: The undefined cells need to have zero values
 emptyCellIndexes = grid.getEmptyCellIndexes()
 
 # Prepare dict of emtpy sets to store blacklisted values
-blacklist = {emptyCellIndexes[key]: set()
-             for key in range(0, len(emptyCellIndexes))}
+blacklist: Dict = {emptyCellIndexes[key]: set()
+                   for key in range(0, len(emptyCellIndexes))}
 
 # Loop over indexes of elements with zeroes
 i = 0
