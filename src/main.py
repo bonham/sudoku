@@ -1,85 +1,69 @@
-from SudokuGrid import SudokuGrid
 import random
 import numpy as np
 from datetime import datetime
-import sys
-from typing import Any, Dict
+from typing import Dict
+from helpers import parseArgsAndLoadFile
+from pathlib import Path
 
 
-def emptyString2Zero(input: Any) -> int:
-    if input == "":
-        return 0
-    else:
-        return int(input)
+# load grid from file or create empty grid
+grid = parseArgsAndLoadFile()
 
-
-# global
-grid = None
-
-if len(sys.argv) == 2:
-
-    try:
-        loadednp = np.loadtxt(
-            sys.argv[1], dtype='i', delimiter=',', converters=emptyString2Zero)
-    except FileNotFoundError as e:
-        print(f"Failed to load '{sys.argv[1]}': {e}")
-        exit(1)
-    else:
-        grid = SudokuGrid(initGrid=loadednp)
-
-elif len(sys.argv) == 1:
-    grid = SudokuGrid()
-    print("\nGenerating full sudoku from scratch")
-else:
-    print("""
-Usage to generate a sudoku:
-
-    main.py
-
-Usage to solve partial sudoku
-
-    main.py Aufgabe.csv
-
-Note: The undefined cells need to have zero values
-
-""")
-    exit(1)
-
-
-####
-# check which cells are zero
+# obtain all cells not filled in.
 emptyCellIndexes = grid.getEmptyCellIndexes()
 
-# Prepare dict of emtpy sets to store blacklisted values
+# Prepare dict of emtpy sets to store blacklist values
+#
+# The keys are the indexes of the empty cells. The values are empty Sets.
+#
+# A 'blacklisted' value is added to a cell
+# when the sudoku is not solvable for that value
 blacklist: Dict = {emptyCellIndexes[key]: set()
                    for key in range(0, len(emptyCellIndexes))}
 
-# Loop over indexes of elements with zeroes
-i = 0
-while (i < len(emptyCellIndexes)):
-    idx = emptyCellIndexes[i]
+# Loop over empty cells
+n = 0
+while (n < len(emptyCellIndexes)):
+
+    # check cell for allowed values
+    idx = emptyCellIndexes[n]
     allowed = grid.allowedValuesLinear(idx).difference(blacklist[idx])
 
+    # If there are no allowed values then this is a wrong path with no solution
     if len(allowed) == 0:
 
-        # print("Es geht nicht weiter x {} y {}".format(x, y))
+        # ### The value of the parent cell was a 'wrong' decision ###
 
-        # go a step back
-        prevIdx = emptyCellIndexes[i - 1]
+        # go a step back and blacklist the value of the previous cell
+        parentCell = emptyCellIndexes[n - 1]
+        numberToBeBlackListed = grid.getLinear(parentCell)
+        blacklist[parentCell].add(numberToBeBlackListed)
 
-        numberToBeBlackListed = grid.getLinear(prevIdx)
-        blacklist[prevIdx].add(numberToBeBlackListed)
-        blacklist[idx].clear()  # invalidate current blacklist
-        grid.clearLinear(prevIdx)
+        # ### Reset current cell ###
 
-        i = i - 1
+        # clear blacklist of Current cell
+        blacklist[idx].clear()
+        # mark current cell as 'free'
+        grid.clearLinear(parentCell)
+
+        # Go one level up and repeat the search for the parent cell.
+        n = n - 1
+
+        # If we are already at the top then whole sudoku has no solution.
+        if n < 0:
+            print("\nThe Sudoku puzzle is not solvable\n")
+            exit(0)
 
     else:
         value = random.choice(list(allowed))
         grid.setLinear(idx, value)
-        i += 1
+        n += 1
 
+# print solution
 print("\n"+grid.str())
+
+# save solution as csv
+Path('out').mkdir(parents=True, exist_ok=True)
 filename = datetime.today().strftime('out/%Y-%m-%d-%Hh%M%S.csv')
 print("\nOutput grid is in file {}\n".format(filename))
 np.savetxt(filename, grid.grid, delimiter=',', fmt='%d')
