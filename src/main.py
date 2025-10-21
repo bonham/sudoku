@@ -32,13 +32,13 @@ elif len(sys.argv) == 1:
 else:
     print("""
 Usage to generate a sudoku:
-          
+
     main.py
-          
+
 Usage to solve partial sudoku
-    
+
     main.py Aufgabe.csv
-          
+
 Note: The undefined cells need to have zero values
 
 """)
@@ -47,7 +47,7 @@ Note: The undefined cells need to have zero values
 
 ####
 # check which cells are zero
-emptyCellIndexes = np.asarray(grid.flat == 0).nonzero()[0].tolist()
+emptyCellIndexes = grid.getEmptyCellIndexes()
 
 # Prepare dict of emtpy sets to store blacklisted values
 blacklist = {emptyCellIndexes[key]: set()

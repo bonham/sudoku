@@ -3,15 +3,22 @@ import numpy as np
 
 class SudokuGrid:
 
-    def __init__(self, disableValueCheck=False, initGrid: np.ndarray | None = None):
+    def __init__(
+            self,
+            disableValueCheck=False,
+            initGrid: np.ndarray | None = None):
 
         self.disableValueCheck = disableValueCheck
 
-        if (type(initGrid) == np.ndarray):
+        if isinstance(initGrid, np.ndarray):
             if initGrid.shape == (9, 9):
                 self.grid = initGrid
             else:
-                print("Grid is not in 9x9 format, but {}".format(initGrid.shape()))
+                print(
+                    "Grid is not in 9x9 format, but {}".format(
+                        initGrid.shape
+                    )
+                )
                 exit(1)
         else:
             self.grid = np.zeros((9, 9), dtype='i')
@@ -91,6 +98,9 @@ class SudokuGrid:
     def clearLinear(self, i):
         self.flat[i] = 0
 
+    def getEmptyCellIndexes(self):
+        return np.asarray(self.flat == 0).nonzero()[0].tolist()
+
     # - - - - - - - - -                                - -
     # Below methods are not needed for simple sudoku solver
 
@@ -106,13 +116,13 @@ class SudokuGrid:
         self.getBlock(bNum)[elementNum//3, elementNum % 3] = value
 
 
-def linear2xy(l):
+def linear2xy(linearIndex):
 
-    if (l >= 81 or l < 0):
+    if (linearIndex >= 81 or linearIndex < 0):
         raise ValueError
 
-    x = l % 9
-    y = l // 9
+    x = linearIndex % 9
+    y = linearIndex // 9
 
     return [x, y]
 
