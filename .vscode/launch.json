@@ -10,7 +10,7 @@
       "request": "launch",
       "program": "src/main.py",
       "console": "integratedTerminal",
-      "args": "out/Aufgabe1.csv"
+      "args": "Aufgaben/Aufgabe1-quotes.csv"
     }
   ]
 }

@@ -18,7 +18,10 @@ def parseArgsAndLoadFile() -> SudokuGrid:
         try:
             loadednp = np.loadtxt(
                 sys.argv[1],
-                dtype='i', delimiter=',', converters=emptyString2Zero)
+                dtype='i',
+                delimiter=',',
+                quotechar='"',
+                converters=emptyString2Zero)
 
         except FileNotFoundError as e:
             print(f"Failed to load '{sys.argv[1]}': {e}")
