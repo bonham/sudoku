@@ -93,7 +93,17 @@ class SudokuGrid:
 
     # return string representation for printing
     def str(self):
-        return np.array2string(self.grid)
+        out = ""
+        for index, line in enumerate(self.grid):
+
+            if index % 3 == 0:
+                out += "+-------+-------+-------+\n"
+
+            t = "| {} {} {} | {} {} {} | {} {} {} |\n".format(*line)
+            out += t
+
+        out += "+-------+-------+-------+\n"
+        return out
 
     def clearLinear(self, i):
         self.flat[i] = 0
