@@ -1,60 +1,70 @@
 from SudokuGrid import SudokuGrid
-from typing import Dict
+from typing import Dict, Set
 import random
 
 
 def solve(grid: SudokuGrid, analyze=False) -> SudokuGrid:
 
-    initialGrid = grid.copy()
+  # obtain all cells not filled in.
+  emptyCellIndexes = grid.getEmptyCellIndexes()
+  print("-- Empty cells to fill: {}".format(len(emptyCellIndexes)))
 
-    # obtain all cells not filled in.
-    emptyCellIndexes = grid.getEmptyCellIndexes()
+  # Prepare dict of emtpy sets to store blacklist values
+  #
+  # The keys are the indexes of the empty cells. The values are empty Sets.
+  #
+  # A 'blacklisted' value is added to a cell
+  # when the sudoku is not solvable for that value
+  blacklist: Dict = {emptyCellIndexes[key]: set()
+                     for key in range(0, len(emptyCellIndexes))}
 
-    # Prepare dict of emtpy sets to store blacklist values
-    #
-    # The keys are the indexes of the empty cells. The values are empty Sets.
-    #
-    # A 'blacklisted' value is added to a cell
-    # when the sudoku is not solvable for that value
-    blacklist: Dict = {emptyCellIndexes[key]: set()
-                       for key in range(0, len(emptyCellIndexes))}
+  # Loop over empty cells
+  return solveIteration(emptyCellIndexes, blacklist, grid)
 
-    # Loop over empty cells
-    n = 0
-    while (n < len(emptyCellIndexes)):
 
-        # check cell for allowed values
-        idx = emptyCellIndexes[n]
-        allowed = grid.allowedValuesLinear(idx).difference(blacklist[idx])
+def solveIteration(emptyCellIndexes, blacklist, grid) -> SudokuGrid:
+  n = 0
+  while (n < len(emptyCellIndexes)):
 
-        # If there are no allowed values then this is a wrong path with no solution
-        if len(allowed) == 0:
+    # check cell for allowed values
+    idx = emptyCellIndexes[n]
+    allowed = grid.allowedValuesLinear(idx).difference(blacklist[idx])
 
-            # ### The value of the parent cell was a 'wrong' decision ###
+    # If there are no allowed values then this is a wrong path with no solution
+    if len(allowed) == 0:
 
-            # go a step back and blacklist the value of the previous cell
-            parentCell = emptyCellIndexes[n - 1]
-            numberToBeBlackListed = grid.getLinear(parentCell)
-            blacklist[parentCell].add(numberToBeBlackListed)
+      # ### The value of the parent cell was a 'wrong' decision ###
 
-            # ### Reset current cell ###
+      # go a step back and blacklist the value of the previous cell
+      parentCell = emptyCellIndexes[n - 1]
+      numberToBeBlackListed = grid.getLinear(parentCell)
+      blacklist[parentCell].add(numberToBeBlackListed)
 
-            # clear blacklist of Current cell
-            blacklist[idx].clear()
-            # mark current cell as 'free'
-            grid.clearLinear(parentCell)
+      # ### Reset current cell ###
 
-            # Go one level up and repeat the search for the parent cell.
-            n = n - 1
+      # clear blacklist of Current cell
+      blacklist[idx].clear()
+      # mark current cell as 'free'
+      grid.clearLinear(parentCell)
 
-            # If we are already at the top then whole sudoku has no solution.
-            if n < 0:
-                print("\nThe Sudoku puzzle is not solvable\n")
-                exit(0)
+      # Go one level up and repeat the search for the parent cell.
+      n = n - 1
 
-        else:
-            value = random.choice(list(allowed))
-            grid.setLinear(idx, value)
-            n += 1
+      # If we are already at the top then whole sudoku has no solution.
+      if n < 0:
+        print("\nThe Sudoku puzzle is not solvable\n")
+        exit(0)
 
-    return grid
+    else:
+      value = random.choice(list(allowed))
+      grid.setLinear(idx, value)
+      n += 1
+
+  return grid
+
+
+class SudokuNode:
+  def __init__(self, parentIndex: int) -> None:
+    self.valuesNoSolution: Set = set()
+    self.children: Dict[int, SudokuNode] = dict()
+    self.parentIndex: int = parentIndex

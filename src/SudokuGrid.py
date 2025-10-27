@@ -113,7 +113,7 @@ class SudokuGrid:
             t = "| {} {} {} | {} {} {} | {} {} {} |\n".format(*lineList)
             out += t
 
-        out += "+-------+-------+-------+\n"
+        out += "+-------+-------+-------+"
         return out
 
     def clearLinear(self, i):

@@ -9,16 +9,18 @@ from SudokuGrid import SudokuGrid
 from solve import solve
 
 # Parse command line arguments
-# 3 modes
+# 3 modes:
+#
 # 1. No arguments: Create random fully filled grid
-# 1. --emptycells <n>: Create random grid with n random cells left empty
-# 2. --file <filename>: load grid from file, analyze and solve it
+# 2. --emptycells <n>: Create random grid with n random cells left empty
+# 3. --file <filename>: load grid from file, analyze and solve it
 parser = argparse.ArgumentParser(description='Sudoku Solver')
 parser.add_argument('--file', type=str,
                     help='Path to input file containing Sudoku grid')
 parser.add_argument('--emptycells', type=int, choices=range(0, 82),
                     help='Number of empty cells to create in random grid (0-81)')
 args = parser.parse_args()
+print("")
 
 # load grid from file or create empty grid
 sparseGrid: SudokuGrid
@@ -42,6 +44,7 @@ else:
             sparseGrid.clearLinear(cellIndexes[i])
 
 print("\nSparse grid:\n"+sparseGrid.str())
+print("\nSolving...\n")
 solvedGrid = solve(sparseGrid, analyze=True)
 print("\nSolved:\n"+solvedGrid.str())
 
