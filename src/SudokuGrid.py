@@ -31,6 +31,13 @@ class SudokuGrid:
             for j in range(0, 9, 3)
         ]
 
+    def copy(self):
+        newGrid = SudokuGrid(
+            disableValueCheck=self.disableValueCheck,
+            initGrid=np.copy(self.grid)
+        )
+        return newGrid
+
     def getLinear(self, i):
         return self.flat[i]
 
@@ -96,10 +103,14 @@ class SudokuGrid:
         out = ""
         for index, line in enumerate(self.grid):
 
+            # replace zero with dot for better visibility
+            # Use the Unicode middle dot character (U+00B7)
+            lineList = ["·" if x == 0 else x for x in line.tolist()]
+
             if index % 3 == 0:
                 out += "+-------+-------+-------+\n"
 
-            t = "| {} {} {} | {} {} {} | {} {} {} |\n".format(*line)
+            t = "| {} {} {} | {} {} {} | {} {} {} |\n".format(*lineList)
             out += t
 
         out += "+-------+-------+-------+\n"
@@ -111,6 +122,8 @@ class SudokuGrid:
     def getEmptyCellIndexes(self):
         return np.asarray(self.flat == 0).nonzero()[0].tolist()
 
+    def getFilledCellIndexes(self):
+        return np.asarray(self.flat != 0).nonzero()[0].tolist()
     # - - - - - - - - -                                - -
     # Below methods are not needed for simple sudoku solver
 
