@@ -3,186 +3,186 @@ import numpy as np
 
 class SudokuGrid:
 
-    def __init__(
-            self,
-            disableValueCheck=False,
-            initGrid: np.ndarray | None = None):
+  def __init__(
+          self,
+          disableValueCheck=False,
+          initGrid: np.ndarray | None = None):
 
-        self.disableValueCheck = disableValueCheck
+    self.disableValueCheck = disableValueCheck
 
-        if isinstance(initGrid, np.ndarray):
-            if initGrid.shape == (9, 9):
-                self.grid = initGrid
-            else:
-                print(
-                    "Grid is not in 9x9 format, but {}".format(
-                        initGrid.shape
-                    )
-                )
-                exit(1)
-        else:
-            self.grid = np.zeros((9, 9), dtype='i')
-
-        self.flat = self.grid.reshape(81)
-
-        self.blocks = [
-            self.grid[i:i+3, j:j+3]
-            for i in range(0, 9, 3)
-            for j in range(0, 9, 3)
-        ]
-
-    def copy(self):
-        newGrid = SudokuGrid(
-            disableValueCheck=self.disableValueCheck,
-            initGrid=np.copy(self.grid)
+    if isinstance(initGrid, np.ndarray):
+      if initGrid.shape == (9, 9):
+        self.grid = initGrid
+      else:
+        print(
+            "Grid is not in 9x9 format, but {}".format(
+                initGrid.shape
+            )
         )
-        return newGrid
+        exit(1)
+    else:
+      self.grid = np.zeros((9, 9), dtype='i')
 
-    def getLinear(self, i):
-        return self.flat[i]
+    self.flat = self.grid.reshape(81)
 
-    def setLinear(self, i, v):
+    self.blocks = [
+        self.grid[i:i+3, j:j+3]
+        for i in range(0, 9, 3)
+        for j in range(0, 9, 3)
+    ]
 
-        # prevent setting a value if it is not zero
-        if self.getLinear(i) != 0:
-            raise SudokuExistsError
+  def copy(self):
+    newGrid = SudokuGrid(
+        disableValueCheck=self.disableValueCheck,
+        initGrid=np.copy(self.grid)
+    )
+    return newGrid
 
-        allowed = self.allowedValuesLinear(i)
+  def getLinear(self, i):
+    return self.flat[i].item()
 
-        if (v in allowed) or self.disableValueCheck:
-            self.flat[i] = v
-        else:
-            raise SudokuValueError
+  def setLinear(self, i: int, v: int):
 
-    def getXY(self, x, y):
-        return self.grid[y, x]
+    # prevent setting a value if it is not zero
+    if self.getLinear(i) != 0:
+      raise SudokuExistsError
 
-    def setXY(self, x, y, v):
+    allowed = self.allowedValuesLinear(i)
 
-        # prevent setting a value if it is not zero
-        if self.getXY(x, y) != 0:
-            raise SudokuExistsError
+    if (v in allowed) or self.disableValueCheck:
+      self.flat[i] = v
+    else:
+      raise SudokuValueError
 
-        allowed = self.allowedValuesXY(x, y)
+  def getXY(self, x, y):
+    return self.grid[y, x]
 
-        if (v in allowed) or self.disableValueCheck:
-            self.grid[y, x] = v
-        else:
-            raise SudokuValueError
+  def setXY(self, x, y, v):
 
-    def getBlock(self, bNum):
-        return self.blocks[bNum]
+    # prevent setting a value if it is not zero
+    if self.getXY(x, y) != 0:
+      raise SudokuExistsError
 
-    def allowedValuesXY(self, ix, iy):
+    allowed = self.allowedValuesXY(x, y)
 
-        blockNum = blockNumByXY(ix, iy)
-        blockSet = set(self.getBlock(blockNum).flatten().tolist())
+    if (v in allowed) or self.disableValueCheck:
+      self.grid[y, x] = v
+    else:
+      raise SudokuValueError
 
-        rowSet = set(self.getRow(iy).tolist())
-        colSet = set(self.getCol(ix).tolist())
+  def getBlock(self, bNum):
+    return self.blocks[bNum]
 
-        numbersInGrid = blockSet.union(rowSet, colSet)
+  def allowedValuesXY(self, ix, iy):
 
-        onetonine = set(range(1, 10))  # 1..9
+    blockNum = blockNumByXY(ix, iy)
+    blockSet = set(self.getBlock(blockNum).flatten().tolist())
 
-        return onetonine.difference(numbersInGrid)
+    rowSet = set(self.getRow(iy).tolist())
+    colSet = set(self.getCol(ix).tolist())
 
-    def allowedValuesLinear(self, i):
-        (x, y) = linear2xy(i)
-        return self.allowedValuesXY(x, y)
+    numbersInGrid = blockSet.union(rowSet, colSet)
 
-    def getRow(self, rowIndex):
-        return self.grid[rowIndex, :]
+    onetonine = set(range(1, 10))  # 1..9
 
-    # Col is all elements with fixed x
-    def getCol(self, colIndex):
-        return self.grid[:, colIndex]
+    return onetonine.difference(numbersInGrid)
 
-    # return string representation for printing
-    def str(self):
-        out = ""
-        for index, line in enumerate(self.grid):
+  def allowedValuesLinear(self, i):
+    (x, y) = linear2xy(i)
+    return self.allowedValuesXY(x, y)
 
-            # replace zero with dot for better visibility
-            # Use the Unicode middle dot character (U+00B7)
-            lineList = ["·" if x == 0 else x for x in line.tolist()]
+  def getRow(self, rowIndex):
+    return self.grid[rowIndex, :]
 
-            if index % 3 == 0:
-                out += "+-------+-------+-------+\n"
+  # Col is all elements with fixed x
+  def getCol(self, colIndex):
+    return self.grid[:, colIndex]
 
-            t = "| {} {} {} | {} {} {} | {} {} {} |\n".format(*lineList)
-            out += t
+  # return string representation for printing
+  def str(self):
+    out = ""
+    for index, line in enumerate(self.grid):
 
-        out += "+-------+-------+-------+"
-        return out
+      # replace zero with dot for better visibility
+      # Use the Unicode middle dot character (U+00B7)
+      lineList = ["·" if x == 0 else x for x in line.tolist()]
 
-    def clearLinear(self, i):
-        self.flat[i] = 0
+      if index % 3 == 0:
+        out += "+-------+-------+-------+\n"
 
-    def getEmptyCellIndexes(self):
-        return np.asarray(self.flat == 0).nonzero()[0].tolist()
+      t = "| {} {} {} | {} {} {} | {} {} {} |\n".format(*lineList)
+      out += t
 
-    def getFilledCellIndexes(self):
-        return np.asarray(self.flat != 0).nonzero()[0].tolist()
-    # - - - - - - - - -                                - -
-    # Below methods are not needed for simple sudoku solver
+    out += "+-------+-------+-------+"
+    return out
 
-    def getFlatList(self):
-        return self.flat
+  def clearLinear(self, i):
+    self.flat[i] = 0
 
-    def getElementInBlockLinear(self, bNum, elementNum):
+  def getEmptyCellIndexes(self) -> list[int]:
+    return np.asarray(self.flat == 0).nonzero()[0].tolist()
 
-        return self.getBlock(bNum)[elementNum//3, elementNum % 3]
+  def getFilledCellIndexes(self):
+    return np.asarray(self.flat != 0).nonzero()[0].tolist()
+  # - - - - - - - - -                                - -
+  # Below methods are not needed for simple sudoku solver
 
-    def setElementInBlockLinear(self, bNum, elementNum, value):
+  def getFlatList(self):
+    return self.flat
 
-        self.getBlock(bNum)[elementNum//3, elementNum % 3] = value
+  def getElementInBlockLinear(self, bNum, elementNum):
+
+    return self.getBlock(bNum)[elementNum//3, elementNum % 3]
+
+  def setElementInBlockLinear(self, bNum, elementNum, value):
+
+    self.getBlock(bNum)[elementNum//3, elementNum % 3] = value
 
 
 def linear2xy(linearIndex) -> list[int]:
 
-    if (linearIndex >= 81 or linearIndex < 0):
-        raise ValueError
+  if (linearIndex >= 81 or linearIndex < 0):
+    raise ValueError
 
-    x = linearIndex % 9
-    y = linearIndex // 9
+  x = linearIndex % 9
+  y = linearIndex // 9
 
-    return [x, y]
+  return [x, y]
 
 
 def xy2linear(x, y):
 
-    if (x > 8 or y > 8 or x < 0 or y < 0):
-        raise ValueError
+  if (x > 8 or y > 8 or x < 0 or y < 0):
+    raise ValueError
 
-    return y * 9 + x
+  return y * 9 + x
 
 
 def blockCoordsByBlockIndex(bx, by):
 
-    r = []
+  r = []
 
-    for y in range(3):
+  for y in range(3):
 
-        for x in range(3):
+    for x in range(3):
 
-            n = bx * 3 + x + y * 9 + by * 9 * 3
-            r.append(n)
+      n = bx * 3 + x + y * 9 + by * 9 * 3
+      r.append(n)
 
-    return r
+  return r
 
 
 def blockNumByXY(x, y):
-    # Note: args are xy - grid index is yx
-    bx = x // 3
-    by = y // 3
-    r = by * 3 + bx
-    return r
+  # Note: args are xy - grid index is yx
+  bx = x // 3
+  by = y // 3
+  r = by * 3 + bx
+  return r
 
 
 class SudokuValueError(ValueError):
-    pass
+  pass
 
 
 class SudokuExistsError(SudokuValueError):
-    pass
+  pass

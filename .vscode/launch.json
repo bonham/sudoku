@@ -5,12 +5,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "sudoku with load",
+      "name": "sudoku with args",
       "type": "debugpy",
       "request": "launch",
       "program": "src/main.py",
       "console": "integratedTerminal",
-      "args": "Aufgaben/Aufgabe1-quotes.csv"
+      "args": "--file .\\Aufgaben\\Aufgabe-few.csv"
     }
   ]
 }
