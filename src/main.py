@@ -18,7 +18,7 @@ parser = argparse.ArgumentParser(description='Sudoku Solver')
 parser.add_argument('--file', type=str,
                     help='Path to input file containing Sudoku grid')
 parser.add_argument('--emptycells', type=int, choices=range(0, 82),
-                    help='Number of empty cells to create in random grid (0-81)')
+                    help='Number of empty cells to create in random grid (0-81). ( Has no effect with --file <f>)')
 args = parser.parse_args()
 print("")
 

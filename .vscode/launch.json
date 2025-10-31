@@ -5,12 +5,20 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "sudoku with args",
+      "name": "su empty 1",
       "type": "debugpy",
       "request": "launch",
       "program": "src/main.py",
       "console": "integratedTerminal",
-      "args": "--file .\\Aufgaben\\Aufgabe-few.csv"
+      "args": "--emptycells 1"
+    },
+    {
+      "name": "su überbest.",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "src/main.py",
+      "console": "integratedTerminal",
+      "args": "--file .\\Aufgaben\\Aufgabe-überbestimmt.csv"
     }
   ]
 }

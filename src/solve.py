@@ -90,38 +90,44 @@ def solveFromNode(currentNode: "SudokuNode", grid: SudokuGrid, initialEmptyCellI
       currentNode.newChild(valueToCheck)
       return solveFromNode(currentNode, grid, initialEmptyCellIndexes, solutions)
 
-    partialEmptyCellIndexes = initialEmptyCellIndexes[emptyCellNumBelow:]
-    subSolution2 = findSingleSolutionForSubtree(partialEmptyCellIndexes, grid)
-
-    if subSolution2 == None:
-      grid.clearLinear(sIdx)
-      currentNode.addNoSolutionValue(valueToCheck)
-      # we need to try again on same level because there could be more options
-      return solveFromNode(currentNode, grid, initialEmptyCellIndexes, solutions)
+    # Not in leaf
     else:
-      # determine solution
-      realSolution2 = [grid.getLinear(i) for i in initialEmptyCellIndexes]
-      solutions.append(realSolution2)
 
-      # append child chain + add solution
-      tmpNode = currentNode
-      for i in range(currentNode.emptyCellNum, len(initialEmptyCellIndexes)):
-        idx = initialEmptyCellIndexes[i]
-        v = grid.getLinear(idx)
-        tmpNode = tmpNode.newChild(v)
+      partialEmptyCellIndexes = initialEmptyCellIndexes[emptyCellNumBelow:]
+      subSolution2 = findSingleSolutionForSubtree(
+          partialEmptyCellIndexes, grid)
 
-      lastNode = tmpNode
-      assert lastNode.emptyCellNum == len(initialEmptyCellIndexes)  # ??? TODO
+      if subSolution2 == None:
+        grid.clearLinear(sIdx)
+        currentNode.addNoSolutionValue(valueToCheck)
+        # we need to try again on same level because there could be more options
+        return solveFromNode(currentNode, grid, initialEmptyCellIndexes, solutions)
 
-      # leave grid unchanged
+      else:
+        # determine solution
+        realSolution2 = [grid.getLinear(i) for i in initialEmptyCellIndexes]
+        solutions.append(realSolution2)
 
-      # return solve from lowest end -last node is one too low
-      nextNode = lastNode.parentNode
-      if nextNode == None:
-        raise RuntimeError("Next node is none - why")
+        # append child chain + add solution
+        tmpNode = currentNode
+        for i in range(currentNode.emptyCellNum, len(initialEmptyCellIndexes)):
+          idx = initialEmptyCellIndexes[i]
+          v = grid.getLinear(idx)
+          tmpNode = tmpNode.newChild(v)
 
-      grid.clearLinear(initialEmptyCellIndexes[nextNode.emptyCellNum])
-      return solveFromNode(nextNode, grid, initialEmptyCellIndexes, solutions)
+        lastNode = tmpNode
+        assert lastNode.emptyCellNum == len(
+            initialEmptyCellIndexes)  # ??? TODO
+
+        # leave grid unchanged
+
+        # return solve from lowest end -last node is one too low
+        nextNode = lastNode.parentNode
+        if nextNode == None:
+          raise RuntimeError("Next node is none - why")
+
+        grid.clearLinear(initialEmptyCellIndexes[nextNode.emptyCellNum])
+        return solveFromNode(nextNode, grid, initialEmptyCellIndexes, solutions)
 
 
 def findSingleSolutionForSubtree(emptyCellIndexes: list[int], grid: SudokuGrid) -> list[int] | None:
