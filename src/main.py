@@ -27,7 +27,6 @@ sparseGrid: SudokuGrid
 
 if args.file:
   sparseGrid = loadGridFromFile(args.file)
-  print("From file:\n"+sparseGrid.str())
 else:
   tmpGrid = SudokuGrid()
   emptyCellIndexes = tmpGrid.getEmptyCellIndexes()  # all
@@ -55,5 +54,5 @@ findAllSolutions(sparseGrid)
 Path('out').mkdir(parents=True, exist_ok=True)
 filename = datetime.today().strftime('out/%Y-%m-%d-%Hh%M%S.csv')
 
-print("\nSolved grid saved to file {}\n".format(filename))
+print("\Sparse grid saved to file {}\n".format(filename))
 np.savetxt(filename, sparseGrid.grid, delimiter=',', fmt='%d')
