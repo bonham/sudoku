@@ -37,7 +37,7 @@ def solveFromNode(currentNode: "SudokuNode", grid: SudokuGrid, initialEmptyCellI
 
   currEmptyCN = currentNode.emptyCellNum
   # check allowed values and pick start value
-  checkedValues = currentNode.checkedValues()
+  checkedValues = currentNode.checkedChildValues()
   sIdx = initialEmptyCellIndexes[currEmptyCN]
   assert grid.getLinear(sIdx) == 0
 
@@ -101,7 +101,7 @@ def solveFromNode(currentNode: "SudokuNode", grid: SudokuGrid, initialEmptyCellI
 
       if subSolution2 is None:
         grid.clearLinear(sIdx)
-        currentNode.addNoSolutionValue(valueToCheck)
+        currentNode.addNoSolutionChildValue(valueToCheck)
         # we need to try again on same level because there could be more options
         return solveFromNode(currentNode, grid, initialEmptyCellIndexes, solutions)
 
@@ -133,6 +133,19 @@ def solveFromNode(currentNode: "SudokuNode", grid: SudokuGrid, initialEmptyCellI
 
 
 def findSingleSolutionForSubtree(emptyCellIndexes: list[int], grid: SudokuGrid) -> list[int] | None:
+  """Finds a single solution
+
+  Manipulates the grid
+
+  Solution found:
+  - grid is filled with solution
+
+  Solution not found:
+  - grid is returned as before - with all cells cleared corresponding to emptyCellIndexes
+
+  The function does not know about partial or full solution and what was initial empty cell index
+  It always returns solution of same size as emptyCellIndex ( could be sub - solution )
+  """
   # print("\n+++++++++++++++")
   blacklist: Dict = {emptyCellIndexes[key]: set()
                      for key in range(0, len(emptyCellIndexes))}

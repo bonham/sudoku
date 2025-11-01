@@ -5,14 +5,20 @@ from typing import Dict, Set, Union
 # If parent is None we are root node
 #
 class SudokuNode:
-  def __init__(self, parentNode: Union["SudokuNode", None], parentNodeValue: int, emptyCellNum: int) -> None:
+
+  def __init__(self, parentNode: Union["SudokuNode", None], value: int, emptyCellNum: int) -> None:
     self._noSolutionValues: Set[int] = set()
     self.children: Dict[int, SudokuNode] = dict()
     self.emptyCellNum: int = emptyCellNum
     self.parentNode: SudokuNode | None = parentNode
-    self.parentNodeValue: int = parentNodeValue
+    self.value: int = value
 
   def newChild(self, value: int) -> "SudokuNode":
+    """Appends new child to node
+
+    value is the value of the child
+
+    """
 
     if value in self.children:
       raise RuntimeError(
@@ -22,14 +28,20 @@ class SudokuNode:
       self.children[value] = newChildNode
       return newChildNode
 
-  def validValues(self) -> Set[int]:
+  def validChildValues(self) -> Set[int]:
     return set(self.children.keys())
 
-  def noSolutionValues(self):
+  def noSolutionChildValues(self):
     return self._noSolutionValues
 
-  def addNoSolutionValue(self, val: int):
+  def addNoSolutionChildValue(self, val: int):
     self._noSolutionValues.add(val)
 
-  def checkedValues(self):
-    return self.noSolutionValues().union(self.validValues())
+  def checkedChildValues(self):
+    return self.noSolutionChildValues().union(self.validChildValues())
+
+  @classmethod
+  def rootNode(cls, v):
+    """Class method
+    """
+    return cls(None, v, 0)
