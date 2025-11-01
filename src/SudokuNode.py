@@ -28,7 +28,7 @@ class SudokuNode:
       self.children[value] = newChildNode
       return newChildNode
 
-  def validChildValues(self) -> Set[int]:
+  def validChildSolutionValues(self) -> Set[int]:
     return set(self.children.keys())
 
   def noSolutionChildValues(self):
@@ -38,10 +38,17 @@ class SudokuNode:
     self._noSolutionValues.add(val)
 
   def checkedChildValues(self):
-    return self.noSolutionChildValues().union(self.validChildValues())
+    return self.noSolutionChildValues().union(self.validChildSolutionValues())
+
+  def childValueOptions(self):
+    all = set(range(1, 10))
+    return all.difference(self.checkedChildValues())
+
+  def isRootNode(self):
+    return self.emptyCellNum == -1
 
   @classmethod
-  def rootNode(cls, v):
+  def superNode(cls):
     """Class method
     """
-    return cls(None, v, 0)
+    return cls(None, -1, -1)

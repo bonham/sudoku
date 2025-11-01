@@ -1,7 +1,27 @@
 from SudokuGrid import SudokuGrid
 from SudokuNode import SudokuNode
+from SolveWalker import SolveWalker
 from typing import Dict, List
 import random
+
+type Solution = list[int]
+type Solutions = list[Solution]
+
+
+def findAllSolutions2(grid: SudokuGrid) -> Solutions:
+
+  solutions: Solutions = []
+  sw = SolveWalker(grid)
+  rootNode = SudokuNode.superNode()
+
+  solutions = solveFromNode2(rootNode, sw, solutions)
+
+  print("Found {} solutions".format(len(solutions)))
+
+  for s in solutions:
+    print(list(s))
+
+  return solutions
 
 
 def findAllSolutions(grid: SudokuGrid) -> list[list[int]]:
@@ -68,7 +88,7 @@ def solveFromNode(currentNode: "SudokuNode", grid: SudokuGrid, initialEmptyCellI
   else:
     # we have at least one additional value
     # startAllowedValues > 0
-    # if random TODO
+    # if random
     valueToCheck = min(allowedValues)
     grid.setLinear(sIdx, valueToCheck)
 
@@ -130,6 +150,54 @@ def solveFromNode(currentNode: "SudokuNode", grid: SudokuGrid, initialEmptyCellI
 
         grid.clearLinear(initialEmptyCellIndexes[nextNode.emptyCellNum])
         return solveFromNode(nextNode, grid, initialEmptyCellIndexes, solutions)
+
+
+def solveFromNode2(curNode: SudokuNode, sw: SolveWalker, solutions: Solutions) -> Solutions:
+
+  #  if curNode.isRootNode():
+    # bootstrap the stack
+
+  nodeStack: list[SudokuNode] = [curNode]
+
+  while nodeStack:
+
+    node = nodeStack.pop(0)
+
+    cValueOpts = node.childValueOptions()
+
+    if len(cValueOpts) == 0:
+      # nothing left to do
+      if node.isRootNode():
+        # Done
+        return solutions
+
+      else:
+        # ??? what if there are not opts left - the rest
+        # should be on the stack ???
+        continue
+
+    else:
+      # there are options
+      valueToCheck = min(cValueOpts)
+      node.value = valueToCheck
+
+#      sw.setValueFromNode(node) # is done in discover ?? ist das sauber?
+
+      solution = sw.discoverSolution(node, nodeStack)  # modifies stack
+
+      if solution is None:
+        sw.clearValueFromNode(node)
+        node.addNoSolutionChildValue(valueToCheck)
+        # need to check same node again for other solutions
+        nodeStack.insert(0, node)
+
+      else:
+        # yeah - solution found
+        # grid is fully populated
+        # stack has new values
+        solutions.append(solution)
+
+  return solutions
 
 
 def findSingleSolutionForSubtree(emptyCellIndexes: list[int], grid: SudokuGrid) -> list[int] | None:
