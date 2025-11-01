@@ -38,7 +38,7 @@ class SolveWalker:
     self.grid.setLinear(idx, value)
 
   def discoverSolution(self, node: SudokuNode) -> Solution | None:
-    """Find solution below given node 
+    """Find solution below given node
 
     Node must have set a value.
 
