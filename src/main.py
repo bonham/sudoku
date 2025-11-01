@@ -2,11 +2,11 @@ import random
 import numpy as np
 from datetime import datetime
 from typing import Dict
-from helpers import loadFileFromGrid
+from helpers import loadGridFromFile
 from pathlib import Path
 import argparse
 from SudokuGrid import SudokuGrid
-from solve import solve, findSingleSolutionForSubtree, solveFromNode
+from solve import findAllSolutions, findSingleSolutionForSubtree
 
 # Parse command line arguments
 # 3 modes:
@@ -26,7 +26,7 @@ print("")
 sparseGrid: SudokuGrid
 
 if args.file:
-  sparseGrid = loadFileFromGrid(args.file)
+  sparseGrid = loadGridFromFile(args.file)
   print("From file:\n"+sparseGrid.str())
 else:
   tmpGrid = SudokuGrid()
@@ -49,11 +49,11 @@ else:
 print("\nSparse grid:\n"+sparseGrid.str())
 
 print("Solve ...")
-solve(sparseGrid)
+findAllSolutions(sparseGrid)
 
 # save solution as csv
-# Path('out').mkdir(parents=True, exist_ok=True)
-# filename = datetime.today().strftime('out/%Y-%m-%d-%Hh%M%S.csv')
+Path('out').mkdir(parents=True, exist_ok=True)
+filename = datetime.today().strftime('out/%Y-%m-%d-%Hh%M%S.csv')
 
-# print("\nSolved grid saved to file {}\n".format(filename))
-# np.savetxt(filename, solvedGrid.grid, delimiter=',', fmt='%d')
+print("\nSolved grid saved to file {}\n".format(filename))
+np.savetxt(filename, sparseGrid.grid, delimiter=',', fmt='%d')

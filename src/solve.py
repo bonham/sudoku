@@ -4,7 +4,7 @@ from typing import Dict, Set, Union, List
 import random
 
 
-def solve(grid: SudokuGrid) -> None:
+def findAllSolutions(grid: SudokuGrid) -> list[list[int]]:
 
   # savedsolutions
   solutions: List[List[int]] = []
@@ -16,6 +16,8 @@ def solve(grid: SudokuGrid) -> None:
 
   for s in solutions:
     print(list(s))
+
+  return (solutions)
 
 
 # Grid will be changed in place
