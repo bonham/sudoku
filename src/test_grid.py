@@ -1,5 +1,4 @@
 from SudokuGrid import SudokuGrid, linear2xy, xy2linear, blockCoordsByBlockIndex, blockNumByXY, SudokuValueError, SudokuExistsError
-from helpers import loadGridFromFile
 import pytest
 
 # Install with 'pip install pytest'
@@ -159,7 +158,6 @@ def test_setxy():
   g.setXY(8, 0, 3)
   g.setXY(1, 1, 4)
 
-  flat = g.getFlatList()[0:12]
   assert g.getFlatList()[0:11].tolist() == [
       1, 0, 0, 2, 0, 0, 0, 0, 3,
       0, 4
