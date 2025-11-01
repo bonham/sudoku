@@ -1,7 +1,6 @@
 import random
 import numpy as np
 from datetime import datetime
-from typing import Dict
 from helpers import loadGridFromFile
 from pathlib import Path
 import argparse
@@ -54,5 +53,5 @@ findAllSolutions(sparseGrid)
 Path('out').mkdir(parents=True, exist_ok=True)
 filename = datetime.today().strftime('out/%Y-%m-%d-%Hh%M%S.csv')
 
-print("\Sparse grid saved to file {}\n".format(filename))
+print("Sparse grid saved to file {}\n".format(filename))
 np.savetxt(filename, sparseGrid.grid, delimiter=',', fmt='%d')

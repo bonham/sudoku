@@ -1,6 +1,6 @@
 from SudokuGrid import SudokuGrid
 from SudokuNode import SudokuNode
-from typing import Dict, Set, Union, List
+from typing import Dict, List
 import random
 
 
@@ -51,13 +51,13 @@ def solveFromNode(currentNode: "SudokuNode", grid: SudokuGrid, initialEmptyCellI
     #    currentNode.emptyCellNum, len(currentNode.validValues())))
 
     # check for root node
-    if currentNode.parentNode == None:
+    if currentNode.parentNode is None:
       print("-- Done")
       return solutions
 
     # Just an assertion
     parentNode = currentNode.parentNode
-    if parentNode == None:
+    if parentNode is None:
       raise RuntimeError("Parent Node None should not happen here")
 
     idx = initialEmptyCellIndexes[parentNode.emptyCellNum]
@@ -84,7 +84,7 @@ def solveFromNode(currentNode: "SudokuNode", grid: SudokuGrid, initialEmptyCellI
       partialEmptyCellIndexes = initialEmptyCellIndexes[emptyCellNumBelow:]
       subSolution1 = findSingleSolutionForSubtree(
           partialEmptyCellIndexes, grid)
-      if subSolution1 == None:
+      if subSolution1 is None:
         raise RuntimeError("No no")
       else:
         realSolution1 = [grid.getLinear(i) for i in initialEmptyCellIndexes]
@@ -99,7 +99,7 @@ def solveFromNode(currentNode: "SudokuNode", grid: SudokuGrid, initialEmptyCellI
       subSolution2 = findSingleSolutionForSubtree(
           partialEmptyCellIndexes, grid)
 
-      if subSolution2 == None:
+      if subSolution2 is None:
         grid.clearLinear(sIdx)
         currentNode.addNoSolutionValue(valueToCheck)
         # we need to try again on same level because there could be more options
@@ -125,7 +125,7 @@ def solveFromNode(currentNode: "SudokuNode", grid: SudokuGrid, initialEmptyCellI
 
         # return solve from lowest end -last node is one too low
         nextNode = lastNode.parentNode
-        if nextNode == None:
+        if nextNode is None:
           raise RuntimeError("Next node is none - why")
 
         grid.clearLinear(initialEmptyCellIndexes[nextNode.emptyCellNum])
