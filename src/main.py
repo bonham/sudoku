@@ -5,7 +5,7 @@ from helpers import loadGridFromFile
 from pathlib import Path
 import argparse
 from SudokuGrid import SudokuGrid
-from solve import findAllSolutions, findSingleSolutionForSubtree
+from solve import findAllSolutions2, findSingleSolutionForSubtree
 
 # Parse command line arguments
 # 3 modes:
@@ -47,7 +47,7 @@ else:
 print("\nSparse grid:\n"+sparseGrid.str())
 print("Empty cells: {}".format(len(sparseGrid.getEmptyCellIndexes())))
 print("Solve ...")
-findAllSolutions(sparseGrid)
+findAllSolutions2(sparseGrid)
 
 # save solution as csv
 Path('out').mkdir(parents=True, exist_ok=True)
