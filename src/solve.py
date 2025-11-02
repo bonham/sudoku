@@ -17,9 +17,14 @@ def findAllSolutions2(grid: SudokuGrid) -> Solutions:
   solutions = solveFromNode2(rootNode, sw, solutions)
 
   print("Found {} solutions".format(len(solutions)))
-
-  for s in solutions:
+  if len(solutions) == 100:
+    print("There are more solutions than 100, but stopped calculating.")
+  if len(solutions) > 15:
+    print("Printing only first 20")
+  for i, s in enumerate(solutions):
     print(list(s))
+    if i == 14:
+      break
 
   return solutions
 
@@ -38,6 +43,9 @@ def solveFromNode2(startNode: SudokuNode, sw: SolveWalker, solutions: Solutions)
   nodeStack: list[SudokuNode] = [startNode]
 
   while nodeStack:
+
+    if len(solutions) >= 100:
+      return solutions
 
     node = nodeStack.pop(0)
 
