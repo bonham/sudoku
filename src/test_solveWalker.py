@@ -6,16 +6,15 @@ from helpers import loadGridFromFile
 
 def test_empty():
 
-  grid = SudokuGrid()
-
-  sw = SolveWalker(grid)
-  rootNodeVal = 7  # random
+  sw = SolveWalker(SudokuGrid())
+  nodeVal1 = 7  # random
+  valToCheck = 8
   firstlevelNode = SudokuNode(None, 7, 0)
-  grid.setLinear(0, rootNodeVal)
+  sw.grid.setLinear(0, nodeVal1)
 
   nodeStack = []
 
-  solution = sw.discoverSolution(firstlevelNode, nodeStack)
+  solution = sw.discoverSolution(firstlevelNode, valToCheck, nodeStack)
   assert solution is not None
   assert len(solution) == 81
   assert len(nodeStack) == 80
@@ -29,7 +28,7 @@ def test_supernode():
 
   nodeStack = []
 
-  solution = sw.discoverSolution(superNode, nodeStack)
+  solution = sw.discoverSolution(superNode, 8, nodeStack)
   assert solution is not None
   assert len(solution) == 81
   assert len(nodeStack) == 81

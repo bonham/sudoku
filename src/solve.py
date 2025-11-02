@@ -152,50 +152,58 @@ def solveFromNode(currentNode: "SudokuNode", grid: SudokuGrid, initialEmptyCellI
         return solveFromNode(nextNode, grid, initialEmptyCellIndexes, solutions)
 
 
-def solveFromNode2(curNode: SudokuNode, sw: SolveWalker, solutions: Solutions) -> Solutions:
+def solveFromNode2(startNode: SudokuNode, sw: SolveWalker, solutions: Solutions) -> Solutions:
 
-  #  if curNode.isRootNode():
-    # bootstrap the stack
-
-  nodeStack: list[SudokuNode] = [curNode]
+  nodeStack: list[SudokuNode] = [startNode]
 
   while nodeStack:
 
     node = nodeStack.pop(0)
 
-    cValueOpts = node.childValueOptions()
+    # set grid values
+    sw.prepareGridValuesFromNode(node)
+
+    # nothing to do for a leaf node
+    if sw.isLeafNode(node):
+      continue
+
+    # check if values are possible
+    cValueOpts = sw.possibleChildValuesForNode(node)
 
     if len(cValueOpts) == 0:
-      # nothing left to do
+
       if node.isRootNode():
-        # Done
-        return solutions
+
+        continue  # TODO: or return??
 
       else:
-        # ??? what if there are not opts left - the rest
-        # should be on the stack ???
+        # nothing to be done
         continue
 
     else:
       # there are options
-      valueToCheck = min(cValueOpts)
-      node.value = valueToCheck
+      childValueToCheck = min(cValueOpts)
 
-#      sw.setValueFromNode(node) # is done in discover ?? ist das sauber?
+      # set grid values
+      sw.prepareGridValuesFromNode(node)
 
-      solution = sw.discoverSolution(node, nodeStack)  # modifies stack
+      solution = sw.discoverSolution(
+          node, childValueToCheck, nodeStack)  # modifies stack
 
       if solution is None:
-        sw.clearValueFromNode(node)
-        node.addNoSolutionChildValue(valueToCheck)
-        # need to check same node again for other solutions
-        nodeStack.insert(0, node)
+        node.addNoSolutionChildValue(childValueToCheck)
+        sw.prepareGridValuesFromNode(node)
+        if sw.possibleChildValuesForNode(node):
+          nodeStack.insert(0, node)
 
       else:
         # yeah - solution found
         # grid is fully populated
         # stack has new values
         solutions.append(solution)
+        sw.prepareGridValuesFromNode(node)
+        if sw.possibleChildValuesForNode(node):
+          nodeStack.insert(0, node)
 
   return solutions
 

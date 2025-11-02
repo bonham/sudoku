@@ -57,7 +57,7 @@ class SolveWalker:
     idx = self.getIndexForLevel(level)
     self.grid.clearLinear(idx)
 
-  def discoverSolution(self, node: SudokuNode, nodeStack: list[SudokuNode]) -> Solution | None:
+  def discoverSolution(self, node: SudokuNode, childValue: int, nodeStack: list[SudokuNode]) -> Solution | None:
     """Find solution below given node
 
     Node must have set a value. (except if node is root node)
@@ -73,35 +73,45 @@ class SolveWalker:
       - Node list added to stack
     """
 
-    nodeValue = node.value
+#    nodeValue = node.value
 
     if self.isLeafNode(node):
       return None
 
     else:
       currentLevel = node.emptyCellNum
+      childLevel = currentLevel + 1  # could be leaf
+      # if currentLevel == -1:
+      #   # supernode:
+      #   pass
 
-      if currentLevel == -1:
-        # supernode:
-        pass
+      # else:
+
+      #   self.setValueForLevel(currentLevel, nodeValue)
+      self.setValueForLevel(childLevel, childValue)
+
+      subSolution: None | list[int]
+
+      if childLevel == self.cidMaxLevel:
+        subSolution = [childValue]
 
       else:
-
-        self.setValueForLevel(currentLevel, nodeValue)
-
-      subEmptyCellIdx = self.splitEmptyCellIndex(currentLevel + 1)[1]
-      self.checkZeroesFromLevel(currentLevel + 1)  # we are not leaf node
-      subSolution = findSingleSolutionForSubtree(subEmptyCellIdx, self.grid)
+        subEmptyCellIdx = self.splitEmptyCellIndex(childLevel+1)[1]
+        subSolution = findSingleSolutionForSubtree(subEmptyCellIdx, self.grid)
 
       if subSolution is None:
         # check if grid is clean
         gridEmptyCid = self.grid.getEmptyCellIndexes()
         assert gridEmptyCid == subEmptyCellIdx
 
+        self.clearValueForLevel(childLevel)
         return None
 
       else:
-        nodeListAppended = appendNodeChain(node, subSolution)
+        childNode = node.newChild(childValue)
+
+        nodeListAppended = appendNodeChain(childNode, subSolution)
+        nodeListAppended.append(childNode)
 
         leafNode = nodeListAppended[0]
         assert self.isLeafNode(leafNode)  # cid equal maxCid
@@ -110,6 +120,7 @@ class SolveWalker:
         nodeStack[:0] = nodeListAppended
 
         fullSolution = self.returnCurrentFullSolution()
+        self.clearValueForLevel(childLevel)  # need something better
         return fullSolution
 
   def isLeafNode(self, node: SudokuNode) -> bool:
@@ -153,9 +164,15 @@ class SolveWalker:
 
     # check integrity of grid
     for i in subEmptyCellIdx:
-      assert self.grid.getLinear(i) == 0
+      val = self.grid.getLinear(i)
+      if val != 0:
+        raise RuntimeError(
+            "Cell {} has value {} but should be 0".format(i, val))
     for i in topEmptyCellIndex:
-      assert self.grid.getLinear(i) != 0
+      val = self.grid.getLinear(i)
+      if val == 0:
+        raise RuntimeError(
+            "Cell {} has value {} but should be >0".format(i, val))
 
   def prepareGridValuesFromNode(self, node: SudokuNode) -> None:
     """Set grid zero, nonzero values based on node
@@ -199,7 +216,7 @@ class SolveWalker:
     It is recommended to run prepareGridValuesFromNode on parent first"""
 
     if self.isLeafNode(parentNode):
-      raise RuntimeError("Calling this function is not allowed for ")
+      raise RuntimeError("Calling this function is not allowed for leaf nodes")
 
     nextLevel = parentNode.emptyCellNum + 1  # <= maxLevel
 
@@ -210,6 +227,11 @@ class SolveWalker:
 
 
 def appendNodeChain(startNode: SudokuNode, valueList: list[int]) -> list[SudokuNode]:
+  """Appends a chain of children (a branch) to a node
+
+  Node values are taken from valueList
+
+  The appended nodes are returned as a list. Deepest levels first"""
 
   nodeList: list[SudokuNode] = []
 
