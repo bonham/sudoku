@@ -176,11 +176,12 @@ class SolveWalker:
       valueNode = valueNode.parentNode
     assert len(topValues) == splitLevel + 1
 
-    # do zeroes from end of grid
-    for lev in range(self.cidMaxLevel, splitLevel, -1):
+    # first write zeros everywhere, but from end of grid
+    for lev in range(self.cidMaxLevel, -1, -1):
       self.clearValueForLevel(lev)
 
-    for lev in range(splitLevel, -1, -1):
+    # now write values but from top
+    for lev in range(0, splitLevel+1):
       self.setValueForLevel(lev, topValues[lev], True)
 
   def possibleChildValuesForNode(self, parentNode: SudokuNode) -> list[int]:

@@ -40,10 +40,6 @@ class SudokuNode:
   def checkedChildValues(self):
     return self.noSolutionChildValues().union(self.validChildSolutionValues())
 
-  def childValueOptions(self):
-    all = set(range(1, 10))
-    return all.difference(self.checkedChildValues())
-
   def isRootNode(self):
     return self.emptyCellNum == -1
 

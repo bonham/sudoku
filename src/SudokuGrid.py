@@ -84,8 +84,13 @@ class SudokuGrid:
     numbersInGrid = blockSet.union(rowSet, colSet)
 
     onetonine = set(range(1, 10))  # 1..9
+    ownValue = self.getXY(ix, iy)
 
-    return onetonine.difference(numbersInGrid)
+    r = onetonine.difference(numbersInGrid)
+
+    if ownValue > 0:
+      r.add(ownValue)  # also allow if there is a current value
+    return r
 
   def allowedValuesLinear(self, i):
     (x, y) = linear2xy(i)
