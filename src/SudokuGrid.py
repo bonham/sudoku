@@ -41,10 +41,10 @@ class SudokuGrid:
   def getLinear(self, i):
     return self.flat[i].item()
 
-  def setLinear(self, i: int, v: int):
+  def setLinear(self, i: int, v: int, override=False):
 
     # prevent setting a value if it is not zero
-    if self.getLinear(i) != 0:
+    if (override is False) and (self.getLinear(i) != 0):
       raise SudokuExistsError
 
     allowed = self.allowedValuesLinear(i)

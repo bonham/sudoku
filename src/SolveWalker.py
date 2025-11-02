@@ -37,10 +37,15 @@ class SolveWalker:
     idx = self.initialEmptyCellIndex[level]
     return self.grid(idx)
 
-  def setValueForLevel(self, level: int, value: int) -> None:
+  def setValueForLevel(self, level: int, value: int, override=False) -> None:
 
     idx = self.initialEmptyCellIndex[level]
-    self.grid.setLinear(idx, value)
+    self.grid.setLinear(idx, value, override)
+
+  def clearValueForLevel(self, level: int) -> None:
+
+    idx = self.initialEmptyCellIndex[level]
+    self.grid.clearLinear(idx)
 
   def setValueFromNode(self, node: SudokuNode) -> None:
     level = node.emptyCellNum
@@ -138,7 +143,7 @@ class SolveWalker:
           self.initialEmptyCellIndex[level:],
       )
 
-  def checkZeroesFromLevel(self, level) -> None:
+  def checkZeroesFromLevel(self, level: int) -> None:
     """Check grid zero / nonzero valules
 
     All values from level and below should be zero.
@@ -152,21 +157,55 @@ class SolveWalker:
     for i in topEmptyCellIndex:
       assert self.grid.getLinear(i) != 0
 
-  # def childValueOptions(self, node: SudokuNode):
-  #   """Provides value options to explore for children of a node
+  def prepareGridValuesFromNode(self, node: SudokuNode) -> None:
+    """Set grid zero, nonzero values based on node
 
-  #   Current node is checked for
-  #   - no solution values
-  #   - solutions already found
-  #   """
-  #   level = node.emptyCellNum
+    Level is determined from node.
 
-  #   self.checkZeroesForSubtree(level)
+    All values below node should be zero.
+    All values from 0 to up to level should be nonzero, filled with solution from tree.
+    """
+    topValues: list[int] = []
+    valueNode = node
+    splitLevel = node.emptyCellNum
 
-  #   idx = self.getIndexForLevel(level)
-  #   allowedInGrid = self.grid.allowedValuesLinear(idx)
-  #   checkedValues = node.checkedChildValues()
-  #   return allowedInGrid.difference(checkedValues)
+    while valueNode.emptyCellNum >= 0:  # skip root node
+      topValues.insert(0, valueNode.value)
+      if (valueNode.parentNode is None):
+        raise RuntimeError("Should not happen")
+      valueNode = valueNode.parentNode
+    assert len(topValues) == splitLevel + 1
+
+    # do zeroes from end of grid
+    for lev in range(self.cidMaxLevel, splitLevel, -1):
+      self.clearValueForLevel(lev)
+
+    for lev in range(splitLevel, -1, -1):
+      self.setValueForLevel(lev, topValues[lev], True)
+
+  def possibleChildValuesForNode(self, parentNode: SudokuNode) -> list[int]:
+    """Returns possible values for a child of a given node
+
+    Take into account from parent
+    - noSolutionChildValue
+    - validChildSolutionValues
+
+    and
+
+    grid.allowedValues()
+    from next lower level
+
+    It is recommended to run prepareGridValuesFromNode on parent first"""
+
+    if self.isLeafNode(parentNode):
+      raise RuntimeError("Calling this function is not allowed for ")
+
+    nextLevel = parentNode.emptyCellNum + 1  # <= maxLevel
+
+    nextLevelIdx = self.getIndexForLevel(nextLevel)
+    gridOpts = self.grid.allowedValuesLinear(nextLevelIdx)
+
+    return gridOpts.difference(parentNode.checkedChildValues())
 
 
 def appendNodeChain(startNode: SudokuNode, valueList: list[int]) -> list[SudokuNode]:

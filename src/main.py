@@ -45,7 +45,7 @@ else:
       sparseGrid.clearLinear(cellIndexes[i])
 
 print("\nSparse grid:\n"+sparseGrid.str())
-
+print("Empty cells: {}".format(len(sparseGrid.getEmptyCellIndexes())))
 print("Solve ...")
 findAllSolutions(sparseGrid)
 
