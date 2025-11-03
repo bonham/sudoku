@@ -81,13 +81,6 @@ class SolveWalker:
     else:
       currentLevel = node.emptyCellNum
       childLevel = currentLevel + 1  # could be leaf
-      # if currentLevel == -1:
-      #   # supernode:
-      #   pass
-
-      # else:
-
-      #   self.setValueForLevel(currentLevel, nodeValue)
       self.setValueForLevel(childLevel, childValue)
 
       subSolution: None | list[int]

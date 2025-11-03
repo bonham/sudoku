@@ -8,28 +8,7 @@ type Solution = list[int]
 type Solutions = list[Solution]
 
 
-def findAllSolutions2(grid: SudokuGrid) -> Solutions:
-
-  solutions: Solutions = []
-  sw = SolveWalker(grid)
-  rootNode = SudokuNode.superNode()
-
-  solutions = solveFromNode2(rootNode, sw, solutions)
-
-  print("Found {} solutions".format(len(solutions)))
-  if len(solutions) == 100:
-    print("There are more solutions than 100, but stopped calculating.")
-  if len(solutions) > 15:
-    print("Printing only first 20")
-  for i, s in enumerate(solutions):
-    print(list(s))
-    if i == 14:
-      break
-
-  return solutions
-
-
-# The startNode is a node being part of a successful solution
+# A node in the tree is representing the part of a successful solution
 # The values of the successful solution on this node are in 'node.validValues()'
 # The values which have no solution downwards are stored in 'node.noSolutionValues()'
 #
@@ -37,14 +16,17 @@ def findAllSolutions2(grid: SudokuGrid) -> Solutions:
 # it checks for actual solution for v
 # if no solution found we will blacklist v in noSolutionValues.
 # if a solution found we add a chain of child nodes representing the found solution.
-# The solution is also added to 'solutions' list.
-def solveFromNode2(startNode: SudokuNode, sw: SolveWalker, solutions: Solutions) -> Solutions:
+# The solution is also added to 'solutions' list.z
+def findAllSolutions2(grid: SudokuGrid, maxcalculations: int) -> Solutions:
 
-  nodeStack: list[SudokuNode] = [startNode]
+  solutions: Solutions = []
+  sw = SolveWalker(grid)
+  rootNode = SudokuNode.superNode()
+  nodeStack: list[SudokuNode] = [rootNode]
 
   while nodeStack:
 
-    if len(solutions) >= 100:
+    if len(solutions) >= maxcalculations:
       return solutions
 
     node = nodeStack.pop(0)
@@ -59,17 +41,8 @@ def solveFromNode2(startNode: SudokuNode, sw: SolveWalker, solutions: Solutions)
     # check if values are possible
     cValueOpts = sw.possibleChildValuesForNode(node)
 
-    if len(cValueOpts) == 0:
-
-      if node.isRootNode():
-
-        continue  # TODO: or return??
-
-      else:
-        # nothing to be done
-        continue
-
-    else:
+    # only proceed if there are options, otherwise continue with next node in stack
+    if len(cValueOpts) > 0:
       # there are options
       childValueToCheck = min(cValueOpts)
 
