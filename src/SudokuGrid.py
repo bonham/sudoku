@@ -76,10 +76,10 @@ class SudokuGrid:
   def allowedValuesXY(self, ix, iy):
 
     blockNum = blockNumByXY(ix, iy)
-    blockSet = set(self.getBlock(blockNum).flatten().tolist())
+    blockSet = set(self.getBlock(blockNum).flatten())
 
-    rowSet = set(self.getRow(iy).tolist())
-    colSet = set(self.getCol(ix).tolist())
+    rowSet = set(self.getRow(iy))
+    colSet = set(self.getCol(ix))
 
     numbersInGrid = blockSet.union(rowSet, colSet)
 
